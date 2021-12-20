@@ -91,8 +91,8 @@ CREATE TABLE Scooters(
 							ON DELETE SET NULL,
 	UNIQUE (licensePlate),
 	CONSTRAINT ScooterOnlyOnWarehouseOrZone CHECK (
-    (Scooters.scooterZoneId IS NOT NULL AND Scooters.warehouseId IS NULL)
-    OR (Scooters.scooterZoneId IS NULL AND Scooters.warehouseId IS NOT NULL)),
+    Scooters.warehouseId IS NULL
+    OR Scooters.scooterZoneId IS NULL),
    CONSTRAINT BatteryOutOfLimits CHECK(battery <= 100 AND battery >= 0)
 
 );
@@ -126,7 +126,7 @@ CREATE TABLE Reparations(
 					ON DELETE CASCADE,
 	FOREIGN KEY(warehouseId) REFERENCES Warehouses (warehouseId)
 						ON DELETE CASCADE,
-	CONSTRAINT EndDateBeforeOrSameStartDate CHECK (startdate < enddate)	
+	CONSTRAINT EndDateBeforeOrSameStartDate CHECK (startdate < enddate )	
 );
 
 CREATE TABLE adCampaigns(
