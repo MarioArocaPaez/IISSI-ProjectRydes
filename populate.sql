@@ -1,106 +1,141 @@
-DELETE FROM adCampaigns;
-DELETE FROM Reparations;
-DELETE FROM Tickets;
-DELETE FROM Scooters;
-DELETE FROM ScooterZones;
-DELETE FROM Warehouses;
-DELETE FROM StockManagers;
-DELETE FROM SalesManagers;
-DELETE FROM Customers;
-DELETE FROM Users;
+DROP TABLE IF EXISTS adCampaigns;
+DROP TABLE IF EXISTS Reparations;
+DROP TABLE IF EXISTS Tickets;
+DROP TABLE IF EXISTS Scooters;
+DROP TABLE IF EXISTS ScooterZones;
+DROP TABLE IF EXISTS Warehouses;
+DROP TABLE IF EXISTS StockManagers;
+DROP TABLE IF EXISTS SalesManagers;
+DROP TABLE IF EXISTS Customers;
+DROP TABLE IF EXISTS Users;
 
-INSERT INTO Users(username,passworduser) VALUES
-		('enrcab', '12345'),
-		('mar23', 'password'),
-		('f4t', 'passwerd'),
-		('deltuu4', '777'),
-		('daaabab', '123456'),
-		('josemi1', 'aaaaaa'),
-		('josemi2', '093821'),
-		('josemi3', '987665'),
-		('undertal3', '1234566666'),
-		('andr34', 'sangregorio'),
-		('sevillista2', 'sangresevilla'),
-		('betico5', 'muchobeti'),
-		('diosmio', 'acaba'),
-		('nomasejemplos', 'conmi'),
-		('nopuedomas', 'sufrimiento'),
-      ('semiproGamer', 'coolpass'),
-  	   ('beticoReal','12345'),
-      ('willirex','007'),
-      ('EdeEnrique','dfsatfg'),
-      ('Santolaya','tortilla'),
-      ('Cruzcampo','megustacruzcampo'),
-      ('elCisterna','soyViolinista'),
-      ('Bostonfk','soyrapero100'),
-      ('raquelg','noestoybien'),
-      ('alvaroH','megustas'),
-      ('JorgeADEEstudiante','estoymamadisimo'),
-      ('Gabriela','CamisetadeGrupo'),
-      ('NachoJuan','tengomuchascasas69'),
-      ('gormitilover61', '12345'),
-      ('chuletedelbarrio101', 'martavuelveporfavor'),
-      ('dreamergirl', 'harrystylessss'),
-      ('miguelitoguapo', 'pewdiepie'),
-      ('milkenjoyer', 'chicagobulls'),
-      ('hellogoodbye', 'goodbyehello'),
-      ('chess2', 'notmypassword');
-		
-INSERT INTO Customers(userId, dni, balance, nameCus, surname, age, paymentMethod) VALUES 
-    (1, '14419838A', 47500.34, 'Benjamin', 'Shapiro', 40, 'monthly'),
-    (2, '74932472M', 543.0, 'Andres', 'Shapiro', 18, 'oneTime'),
-    (3, '40934402W', 10.0, 'Antonio', 'Muñoz', 20, 'monthly'),
-    (4, '424324I2E', 26.7, 'David', 'Montes', 32, 'oneTime'),
-    (5, '41412042P', 413.5, 'Felix', 'Undertale', 19, 'yearly'),
-    (6, '48129248C', 41.4, 'Felix', 'Deltarune', 20, 'monthly'),
-    (7, '12321412G', 29.8, 'Margarita', 'Flores', 79, 'monthly'),
-    (8, '46890987C', 1321.4, 'Nuria', 'Jimenez', 69, 'monthly'),
-    (9, '24124248H', 1345.0, 'Marcos', 'Marcos', 33, 'monthly');
-    
+CREATE TABLE Users(
+	userId INT NOT NULL AUTO_INCREMENT,
+	username VARCHAR(60),
+	passworduser VARCHAR(60),
+	PRIMARY KEY(userId),
+	UNIQUE (username)
+);
 
-INSERT INTO SalesManagers(userId, dni, nameSal, surname) VALUES
-    (10, '19419838A', 'BenjaminMan', 'ShapiroMan'),
-    (30, '15513681T', 'Patrick', 'Mclovin'),
-    (31, '64736546D', 'María', 'Lorenzo'),
-    (32, '98364826S', 'Naruto', 'Uzumaki'),
-    (33, '43452465P', 'Sasuke', 'Uchiha'),
-    (34, '54645546D', 'Luffy', 'Monkey'),
-    (35, '59376949F', 'Kakashi', 'Hatake'),
-    (29, '59374545F', 'Madara', 'Uchiha');
-    
-INSERT INTO StockManagers(userId, dni, nameSto, surname) VALUES
-     (11, '15419838A', 'BenjaminSto', 'ShapiroSto'),
-     (12, '11879389B', 'Lewis', 'Alonso'),
-     (13, '51857355C', 'Paco', 'Corales'),
-     (14, '31879385T', 'Rodolfo', 'Alonso'),
-     (15, '11279381T', 'Rufino', 'Blanco'),
-     (16, '41879481B', 'Martin', 'Pepino'),
-     (17, '71879387T', 'Javier', 'Bezos'),
-     (18, '11879585S', 'Travis', 'Scott');
-    
-INSERT INTO Warehouses(stockManagerId, location) VALUES
-    (1, 'Avenida Taladro');
-    
-INSERT INTO ScooterZones(stockManagerId, location) VALUES
-    (1, 'Nervión');
-    
-INSERT INTO scooters(licensePlate, scooterZoneId, warehouseId, scooterColor, battery, scooterType) VALUES
-    ('523B', 1, null, 'Black', 56, 'city'),
-    ('777V', 1, Null, 'Black', 70, 'allTerrain'),
- 	 ('333V', 1, Null, 'Black', 50, 'allTerrain'),
- 	 ('737V', 1, Null, 'Black', 30, 'allTerrain'),
-	 ('707V', null, 1, 'Black', 30, 'allTerrain'),
-	 ('709V', null, 1, 'Black', 30, 'allTerrain'),
-    ('787V', 1, Null, 'Blue', 90, 'allTerrain');
+CREATE TABLE Customers(
+	customerId INT NOT NULL AUTO_INCREMENT,
+	dni CHAR(9),
+	userId INT NOT NULL,
+	balance DOUBLE,
+	nameCus VARCHAR(20),
+	surname VARCHAR(20),
+	age INT,
+	paymentMethod ENUM ('oneTime', 'monthly', 'yearly'), 
+	PRIMARY KEY(customerId),
+	FOREIGN KEY(userId) REFERENCES Users(userId)
+					ON DELETE CASCADE,
+	UNIQUE (dni),
+	CONSTRAINT CustomerTooYoung CHECK (age>=18),
+	CONSTRAINT NegativeBalance CHECK (balance>=0)
+);
 
-INSERT INTO tickets(scooterId, customerId, numTicket, startDate, endDate, ticketType) VALUES
-    (1, 1, 'T333', '2021-5-21 12:43:31', '2021-5-22 13:22:14', 'oneTime');
-    
-INSERT INTO reparations(scooterId, warehouseId, startDate, endDate, reparationProblem) VALUES
-    (1, 1, '2021-1-1', '2021-1-2', 'WHEELS ARE BROKEN');
-    
-INSERT INTO AdCampaigns (salesManagerId, description, adDate, moneySpent, profit) VALUES
-    (1, 'TAKE A SCOOTER YOU FOOL', '2021-12-4', 1231.45, 324.0);
-    
+CREATE TABLE SalesManagers(
+	salesManagerId INT NOT NULL AUTO_INCREMENT,
+	dni CHAR(9),
+	userId INT,
+	NameSal VARCHAR(20),
+	surname VARCHAR(20),
+	PRIMARY KEY(salesManagerId),
+	FOREIGN KEY(userId) REFERENCES Users(userId)
+					ON DELETE CASCADE,
+	UNIQUE (dni)
+);
 
-		
+CREATE TABLE StockManagers(
+	stockManagerId INT NOT NULL AUTO_INCREMENT,
+	dni CHAR(9),
+	userId INT,
+	NameSto VARCHAR(20),
+	surname VARCHAR(20),
+	PRIMARY KEY(stockManagerId),
+	FOREIGN KEY(userId) REFERENCES Users(userId)
+					ON DELETE CASCADE,
+	UNIQUE (dni)
+);
+
+CREATE TABLE Warehouses(
+	warehouseId INT NOT NULL AUTO_INCREMENT,
+	stockManagerId INT,
+	location VARCHAR(60),
+	PRIMARY KEY(warehouseId),
+	FOREIGN KEY(stockManagerId) REFERENCES StockManagers (stockManagerId) 
+			ON DELETE SET NULL
+);
+
+CREATE TABLE ScooterZones(
+	scooterZoneId INT NOT NULL AUTO_INCREMENT,
+	stockManagerId INT,
+	location VARCHAR(60),
+	PRIMARY KEY (scooterZoneId),
+	FOREIGN KEY(stockManagerId) REFERENCES StockManagers (stockManagerId)
+   		ON DELETE SET NULL
+);
+
+CREATE TABLE Scooters(
+	scooterId INT NOT NULL AUTO_INCREMENT,
+	licensePlate CHAR(4),
+	scooterZoneId INT,
+	warehouseId INT,
+	scooterColor ENUM ('White','Black','Red','Blue','Yellow','Green'),
+	battery INT,
+	scooterType ENUM ('allTerrain','city','stroll'),
+	PRIMARY KEY(scooterId),
+	FOREIGN KEY(scooterZoneId) REFERENCES ScooterZones (scooterZoneId) 
+							ON DELETE SET NULL,
+	FOREIGN KEY(warehouseId) REFERENCES Warehouses (warehouseId)
+							ON DELETE SET NULL,
+	UNIQUE (licensePlate),
+	CONSTRAINT ScooterOnlyOnWarehouseOrZone CHECK (
+    Scooters.warehouseId IS NULL
+    OR Scooters.scooterZoneId IS NULL),
+   CONSTRAINT BatteryOutOfLimits CHECK(battery <= 100 AND battery >= 0)
+
+);
+
+CREATE TABLE Tickets(
+   ticketId INT NOT NULL AUTO_INCREMENT,
+   scooterId INT,
+   customerId INT,
+   numTicket VARCHAR(4) NOT NULL,
+   startDate DATETIME,
+   endDate DATETIME,
+   ticketType ENUM ('oneTime', 'monthly', 'yearly'),
+   PRIMARY KEY(ticketId),
+   FOREIGN KEY(scooterId) REFERENCES Scooters(scooterId)
+					ON DELETE SET NULL,
+   FOREIGN KEY(customerId) REFERENCES Customers(customerId)
+					ON DELETE SET NULL,
+   UNIQUE (numTicket),
+   CONSTRAINT EndDateBeforeOrSameStartDate CHECK (startdate < enddate)	
+);
+
+CREATE TABLE Reparations(
+	reparationId INT NOT NULL AUTO_INCREMENT,
+	scooterId INT,
+	warehouseId INT,
+	startDate DATE,
+	endDate DATE,
+	reparationProblem LONGTEXT,
+	PRIMARY KEY(reparationId),
+	FOREIGN KEY(scooterId) REFERENCES Scooters(scooterId)
+					ON DELETE CASCADE,
+	FOREIGN KEY(warehouseId) REFERENCES Warehouses (warehouseId)
+						ON DELETE CASCADE,
+	CONSTRAINT EndDateBeforeOrSameStartDate CHECK (startdate < enddate )	
+);
+
+CREATE TABLE adCampaigns(
+	adCampaignId INT NOT NULL AUTO_INCREMENT,
+	salesManagerId INT,
+	description LONGTEXT,
+	adDate DATE,
+	moneySpent DOUBLE,
+	profit DOUBLE, 
+	PRIMARY KEY(adCampaignId),
+	FOREIGN KEY(salesManagerId) REFERENCES salesmanagers (salesManagerId)
+);
