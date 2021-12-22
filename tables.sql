@@ -88,14 +88,27 @@ CREATE TABLE Scooters(
     OR Scooters.scooterZoneId IS NULL),
    CONSTRAINT BatteryOutOfLimits CHECK(battery BETWEEN 0 AND 100),
 	CONSTRAINT RentingLess20Battery CHECK (Scooters.warehouseId IS NOT NULL OR Scooters.scooterZoneId IS NOT NULL OR battery >= 20)
-
 );
+-- BR004
+DELIMITER //
+CREATE OR REPLACE TRIGGER notUsedWhileRepaired
+BEFORE INSERT ON scooters
+FOR EACH ROW
+BEGIN
+IF(EXISTS(
+SELECT * FROM scooters NATURAL JOIN reparations 
+WHERE reparations.endDate IS NULL AND scooters.scooterZoneId IS NULL AND scooters.warehouseId IS NULL)) 
+THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =
+'A scooter cannot be used while it is being repaired';
+END IF;
+END //
+DELIMITER ;
 
 CREATE TABLE Rides(
 	rideId INT NOT NULL AUTO_INCREMENT,
    scooterId INT,
    customerId INT,
-   numTicket VARCHAR(4) NOT NULL,
+   numTicket CHAR(4) NOT NULL,
    startDate DATETIME NOT NULL,
    endDate DATETIME,
    ticketType ENUM ('oneTime', 'monthly', 'yearly'),
@@ -123,6 +136,19 @@ CREATE TABLE Reparations(
 						ON DELETE SET NULL,
 	CONSTRAINT EndDateBeforeOrSameStartDate CHECK (startdate < enddate )	
 );
+-- BR007
+DELIMITER //
+CREATE OR REPLACE TRIGGER
+    tNoReparationsSunday
+BEFORE INSERT ON Reparations FOR EACH ROW
+BEGIN
+    IF (DAYNAME(new.startDate) = 'Sunday') THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT=
+        'A REPARATION CAN NOT START ON SUNDAY';
+    END IF;
+END //
+DELIMITER ;
+
 
 CREATE TABLE adCampaigns(
 	adCampaignId INT NOT NULL AUTO_INCREMENT,
@@ -134,3 +160,5 @@ CREATE TABLE adCampaigns(
 	PRIMARY KEY(adCampaignId),
 	FOREIGN KEY(salesManagerId) REFERENCES salesmanagers (salesManagerId)
 );
+
+
