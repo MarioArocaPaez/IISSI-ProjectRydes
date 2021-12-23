@@ -87,3 +87,29 @@ CALL pFR008AddScooter(NULL, '412M', 6,NULL, 'White', 50, 'city');
 CALL pFR008AddScooter(2, '468Z', 6,NULL, 'White', 50, 'city');
 DELETE FROM scooters WHERE licenseplate = '412M';
 DELETE FROM scooters WHERE licenseplate = '468Z';
+
+
+-- FR009
+DELIMITER //
+CREATE OR REPLACE PROCEDURE
+    pFR009RemoveScooter (scooterId2 INT)
+BEGIN
+    DELETE FROM scooters WHERE scooterId=scooterId2;
+END //
+DELIMITER ;
+
+CALL pFR009RemoveScooter(3);
+
+
+-- FR010
+DELIMITER //
+CREATE OR REPLACE PROCEDURE
+    pFR010UpdateScooter(scooterId2 INT, licensePlate2 CHAR(4), scooterZoneId2 INT, warehouseId2 INT, scooterColor2 ENUM('White','Black','Red','Blue','Yellow','Green'), battery2 INT, scooterType2 ENUM('allTerrain','city','stroll'))
+BEGIN
+    IF (scooterId2 IS NOT NULL) THEN
+      UPDATE scooters SET scooterId=scooterId2, licensePlate=licensePlate2, scooterZoneId=scooterZoneId2, warehouseId=warehouseId2, scooterColor=scooterColor2, battery=battery2, scooterType=scooterType2 WHERE scooterId=scooterId2;
+   END IF;
+END //
+DELIMITER ;
+
+CALL pFR010UpdateScooter(5, '999Z', 6, NULL, 'Black', 50, 'city');
