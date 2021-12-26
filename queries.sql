@@ -66,6 +66,18 @@ DELIMITER ;
 
 SELECT FR006numberScootersInZone('Nervión');
 
+-- FR007 list scooters under 20% battery 
+DELIMITER //
+CREATE OR REPLACE PROCEDURE
+    pFR007scootersUnderUsableLimit()
+BEGIN
+    SELECT *
+    FROM scooters
+    WHERE scooters.battery <= 20;
+END //
+DELIMITER ;
+
+CALL scootersUnderUsableLimit();
 
 -- FR008
 DELIMITER //
