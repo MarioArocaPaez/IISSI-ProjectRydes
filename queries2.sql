@@ -88,3 +88,25 @@ DELIMITER ;
 CALL FR016SearchOfReparationProblems('%WHEEL%');
 CALL FR016SearchOfReparationProblems('%BROKEN%');
 CALL FR016SearchOfReparationProblems('%');
+
+
+-- FR018
+DELIMITER //
+CREATE OR REPLACE PROCEDURE FR018(ScoId INT, wareId INT,Sdate DATE, Problem LONGTEXT)
+BEGIN
+    INSERT INTO reparations(scooterId, warehouseId, startDate, endDate, reparationProblem) VALUES
+    (ScoId, wareId, Sdate, NULL, Problem);
+   UPDATE scooters
+   SET scooters.warehouseId = wareId, scooters.scooterZoneId=NULL WHERE ScoId = scooters.scooterId;
+END //
+DELIMITER ;
+
+
+-- FR019
+DELIMITER //
+CREATE OR REPLACE PROCEDURE FR019(RepId INT, Edate DATE)
+BEGIN
+   UPDATE reparations
+   SET reparations.EndDate = Edate WHERE RepId = reparations.ReparationId;
+END //
+DELIMITER ;
