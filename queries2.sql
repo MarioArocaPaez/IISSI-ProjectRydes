@@ -46,6 +46,13 @@ DELIMITER ;
 
 CALL pFR013StockReplenishment(5);
 
+-- FR014
+CREATE OR REPLACE VIEW VFR014ScooterStatus AS
+    SELECT S.scooterId, S.scooterZoneId, S.warehouseId, R.reparationId
+    FROM scooters S LEFT JOIN reparations R
+    ON (S.scooterId = R.scooterId AND R.endDate IS NULL);
+    
+    SELECT * FROM VFR014ScooterStatus;
 
 -- FR015
 DELIMITER //
