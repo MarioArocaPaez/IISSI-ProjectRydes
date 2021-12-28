@@ -46,6 +46,7 @@ DELIMITER ;
 
 CALL pFR013StockReplenishment(5);
 
+
 -- FR014
 CREATE OR REPLACE VIEW VFR014ScooterStatus AS
     SELECT S.scooterId, S.scooterZoneId, S.warehouseId, R.reparationId
@@ -53,6 +54,7 @@ CREATE OR REPLACE VIEW VFR014ScooterStatus AS
     ON (S.scooterId = R.scooterId AND R.endDate IS NULL);
     
     SELECT * FROM VFR014ScooterStatus;
+
 
 -- FR015
 DELIMITER //
@@ -69,3 +71,20 @@ END //
 DELIMITER ;
 
 CALL pFR015ScooterMostCommonColor();
+
+-- FR016
+DELIMITER //
+CREATE OR REPLACE PROCEDURE 	
+   FR016SearchOfReparationProblems(problem VARCHAR(64))
+BEGIN
+   SELECT DISTINCT reparationProblem, COUNT(reparationProblem)
+      FROM reparations
+      WHERE reparations.reparationProblem LIKE problem
+      GROUP BY reparationProblem
+		ORDER BY COUNT(reparationProblem) desc;
+END //
+DELIMITER ;
+
+CALL FR016SearchOfReparationProblems('%WHEEL%');
+CALL FR016SearchOfReparationProblems('%BROKEN%');
+CALL FR016SearchOfReparationProblems('%');
