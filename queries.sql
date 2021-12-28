@@ -24,6 +24,20 @@ CALL PFR002CustomerRegistration('josemi55', 'hfashfiafwi', '23456745M', 'Carlos'
 DELETE FROM users WHERE username = 'josemi55';
 
 
+-- FR003 Ticket Purchase
+DELIMITER //
+CREATE OR REPLACE PROCEDURE 
+    PFR003TicketPurchase (uId INT, numTicket CHAR(4), tType ENUM ('oneTime', 'monthly', 'yearly'))
+    BEGIN
+    INSERT INTO rides (customerId, numTicket, startDate, endDate, ticketType) VALUES (uId, numTicket, NOW(), NULL, tType);
+END //
+DELIMITER ;
+
+CALL PFR003TicketPurchase(1, '441Z', 'oneTime');
+DELETE FROM rides WHERE numticket = '441Z';
+
+
+
 -- FR004 Stock Consultation
 DELIMITER //
 CREATE OR REPLACE PROCEDURE
@@ -66,18 +80,20 @@ DELIMITER ;
 
 SELECT FR006numberScootersInZone('Nervión');
 
+
 -- FR007 list scooters under 20% battery 
 DELIMITER //
 CREATE OR REPLACE PROCEDURE
     pFR007scootersUnderUsableLimit()
 BEGIN
-    SELECT *
+    SELECT scooterId, licensePlate, scooterZoneId, warehouseId, battery
     FROM scooters
     WHERE scooters.battery <= 20;
 END //
 DELIMITER ;
 
-CALL scootersUnderUsableLimit();
+CALL pFR007scootersUnderUsableLimit();
+
 
 -- FR008
 DELIMITER //
