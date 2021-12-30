@@ -117,27 +117,30 @@ DELETE FROM scooters WHERE licenseplate = '412M';
 DELETE FROM scooters WHERE licenseplate = '468Z';
 
 
--- FR009
+-- FR009 AND FR010
 DELIMITER //
+
 CREATE OR REPLACE PROCEDURE
     pFR009RemoveScooter (scooterId2 INT)
 BEGIN
+	SET AUTOCOMMIT=0;
+	START TRANSACTION;
     DELETE FROM scooters WHERE scooterId=scooterId2;
+   COMMIT;
 END //
 DELIMITER ;
-
-CALL pFR009RemoveScooter(3);
-
-
--- FR010
 DELIMITER //
 CREATE OR REPLACE PROCEDURE
     pFR010UpdateScooter(scooterId2 INT, licensePlate2 CHAR(4), scooterZoneId2 INT, warehouseId2 INT, scooterColor2 ENUM('White','Black','Red','Blue','Yellow','Green'), battery2 INT, scooterType2 ENUM('allTerrain','city','stroll'))
 BEGIN
+	SET AUTOCOMMIT=0;
+	START TRANSACTION;
     IF (scooterId2 IS NOT NULL) THEN
       UPDATE scooters SET scooterId=scooterId2, licensePlate=licensePlate2, scooterZoneId=scooterZoneId2, warehouseId=warehouseId2, scooterColor=scooterColor2, battery=battery2, scooterType=scooterType2 WHERE scooterId=scooterId2;
    END IF;
+	COMMIT;
 END //
 DELIMITER ;
+   CALL pFR009RemoveScooter(3);
+   CALL pFR010UpdateScooter(5, '999Z', 6, NULL, 'Black', 50, 'city');
 
-CALL pFR010UpdateScooter(5, '999Z', 6, NULL, 'Black', 50, 'city');
