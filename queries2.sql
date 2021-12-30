@@ -90,6 +90,23 @@ CALL FR016SearchOfReparationProblems('%BROKEN%');
 CALL FR016SearchOfReparationProblems('%');
 
 
+-- FR017
+DELIMITER //
+CREATE OR REPLACE PROCEDURE
+    FR017()
+BEGIN
+    SELECT COUNT(DISTINCT reparationProblem), location, warehouses.warehouseId
+        FROM warehouses JOIN reparations
+        WHERE warehouses.warehouseId = reparations.warehouseId AND reparations.endDate IS NOT NULL
+        GROUP BY warehouses.warehouseId 
+        ORDER BY COUNT(reparationProblem) desc;
+        
+END //
+DELIMITER ;
+
+CALL FR017();
+
+
 -- FR018
 DELIMITER //
 CREATE OR REPLACE PROCEDURE FR018(ScoId INT, wareId INT,Sdate DATE, Problem LONGTEXT)
@@ -101,6 +118,8 @@ BEGIN
 END //
 DELIMITER ;
 
+-- CALL FR018(2,8,'2021-1-1','NO HANDLEBAR');
+
 
 -- FR019
 DELIMITER //
@@ -110,3 +129,5 @@ BEGIN
    SET reparations.EndDate = Edate WHERE RepId = reparations.ReparationId;
 END //
 DELIMITER ;
+
+-- CALL FR019(52, '2021-1-2');
