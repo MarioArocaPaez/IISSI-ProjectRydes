@@ -39,7 +39,8 @@ CREATE TABLE SalesManagers(
 	salary DOUBLE DEFAULT 900,
 	PRIMARY KEY(salesManagerId),
 	FOREIGN KEY(userId) REFERENCES Users(userId)
-					ON DELETE CASCADE
+					ON DELETE CASCADE,
+	CONSTRAINT IllegalSalary CHECK (salary>900)
 );
 
 CREATE TABLE StockManagers(
@@ -48,7 +49,8 @@ CREATE TABLE StockManagers(
 	salary DOUBLE DEFAULT 900,
 	PRIMARY KEY(stockManagerId),
 	FOREIGN KEY(userId) REFERENCES Users(userId)
-					ON DELETE CASCADE
+					ON DELETE CASCADE,
+	CONSTRAINT IllegalSalary CHECK (salary>900)
 );
 
 CREATE TABLE Warehouses(
@@ -137,15 +139,13 @@ CREATE TABLE adCampaigns(
 -- BR004 Availability of scooters
 DELIMITER //
 CREATE OR REPLACE TRIGGER notUsedWhileRepaired
-BEFORE INSERT ON scooters
-FOR EACH ROW
+AFTER INSERT ON reparations FOR EACH ROW
 BEGIN
-IF(EXISTS(
-SELECT * FROM scooters NATURAL JOIN reparations 
-WHERE reparations.endDate IS NULL AND scooters.scooterZoneId IS NULL AND scooters.warehouseId IS NULL)) 
-THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =
-'A scooter cannot be used while it is being repaired';
-END IF;
+	IF(EXISTS(SELECT * FROM scooters JOIN reparations ON scooters.scooterId = reparations.scooterId
+	WHERE reparations.endDate IS NULL AND scooters.scooterZoneId IS NULL AND scooters.warehouseId IS NULL)) 
+		THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =
+		'A scooter cannot be used while it is being repaired';
+	END IF;
 END //
 DELIMITER ;
 
@@ -153,7 +153,7 @@ DELIMITER ;
 DELIMITER //
 CREATE OR REPLACE TRIGGER
     BR006
-BEFORE INSERT ON Reparations FOR EACH ROW
+AFTER INSERT ON Reparations FOR EACH ROW
 BEGIN
     IF (EXISTS(SELECT scooterId, COUNT(*) contador
 FROM reparations 
@@ -181,7 +181,7 @@ DELIMITER ;
 DELIMITER //
 CREATE OR REPLACE TRIGGER
     tNoReparationsSunday
-BEFORE INSERT ON Reparations FOR EACH ROW
+AFTER INSERT ON Reparations FOR EACH ROW
 BEGIN
     IF (DAYNAME(new.startDate) = 'Sunday') THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT=
